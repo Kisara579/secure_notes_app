@@ -5,6 +5,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(home: NotesPage());
@@ -12,11 +14,16 @@ class MyApp extends StatelessWidget {
 }
 
 class NotesPage extends StatefulWidget {
+  const NotesPage({super.key});
+
   @override
   _NotesPageState createState() => _NotesPageState();
 }
 
 class _NotesPageState extends State<NotesPage> {
+  TextEditingController noteController = TextEditingController();
+
+  List<String> notes = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,9 +31,9 @@ class _NotesPageState extends State<NotesPage> {
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
+              controller: noteController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Enter your note",
@@ -35,9 +42,36 @@ class _NotesPageState extends State<NotesPage> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                print("Button Clicked");
+                if (noteController.text.isNotEmpty) {
+                  setState(() {
+                    notes.add(noteController.text);
+                  });
+                  noteController.clear();
+                }
               },
               child: Text("Add Note"),
+            ),
+            SizedBox(height: 20),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: notes.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(notes[index]),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          setState(() {
+                            notes.removeAt(index);
+                          });
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
