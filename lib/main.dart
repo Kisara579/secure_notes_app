@@ -24,8 +24,17 @@ class _NotesPageState extends State<NotesPage> {
   TextEditingController noteController = TextEditingController();
 
   List<String> notes = [];
+
+  bool isUnlocked = false;
+  String correctPin = "1234";
+  TextEditingController pinController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    if (!isUnlocked) {
+      return buildLockScreen();
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text("Secure Notes")),
       body: Padding(
@@ -72,6 +81,45 @@ class _NotesPageState extends State<NotesPage> {
                   );
                 },
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildLockScreen() {
+    return Scaffold(
+      appBar: AppBar(title: Text("Enter PIN")),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: pinController,
+              keyboardType: TextInputType.number,
+              obscureText: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Enter PIN",
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                if (pinController.text == correctPin) {
+                  setState(() {
+                    isUnlocked = true;
+                  });
+                  pinController.clear();
+                } else {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text("Wrong PIN")));
+                }
+              },
+              child: Text("Unlock"),
             ),
           ],
         ),
