@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,8 +27,14 @@ class _NotesPageState extends State<NotesPage> {
   List<String> notes = [];
 
   bool isUnlocked = false;
-  String correctPin = "1234";
+  String? savedPin;
   TextEditingController pinController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadPin();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +50,7 @@ class _NotesPageState extends State<NotesPage> {
           children: [
             TextField(
               controller: noteController,
+              keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Enter your note",
@@ -102,13 +110,17 @@ class _NotesPageState extends State<NotesPage> {
               obscureText: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Enter PIN",
+                labelText: savedPin == null ? "Set a PIN" : "Enter PIN",
               ),
             ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                if (pinController.text == correctPin) {
+                if (savedPin == null) {
+                  if(pinController.text.isNotEmpty) {
+                    savePin(pinController.text);
+                  }
+                } else if (pinController.text == savedPin) {
                   setState(() {
                     isUnlocked = true;
                   });
@@ -125,5 +137,24 @@ class _NotesPageState extends State<NotesPage> {
         ),
       ),
     );
+  }
+
+  Future<void> loadPin() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      savedPin = prefs.getString('pin');
+    });
+  }
+
+  Future<void> savePin(String pin) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('pin', pin);
+
+    setState(() {
+      savedPin = pin;
+      isUnlocked = true;
+    });
+
+    pinController.clear();
   }
 }
