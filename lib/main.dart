@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 void main() {
   runApp(MyApp());
@@ -198,13 +199,23 @@ class _NotesPageState extends State<NotesPage> {
 
   Future<void> saveNotes() async {
     final pref = await SharedPreferences.getInstance();
-    await pref.setStringList('notes', notes);
+
+    List<String> encodedNotes = notes
+        .map((note) => base64Encode(utf8.encode(note)))
+        .toList();
+
+    await pref.setStringList('notes', encodedNotes);
   }
 
   Future<void> loadNotes() async {
     final pref = await SharedPreferences.getInstance();
+
+    List<String> encodedNotes = pref.getStringList("notes") ?? [];
+
     setState(() {
-      notes = pref.getStringList("notes") ?? [];
+      notes = encodedNotes
+          .map((note) => utf8.decode(base64Decode(note)))
+          .toList();
     });
   }
 }
