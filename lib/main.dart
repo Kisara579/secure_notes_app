@@ -49,7 +49,7 @@ class _NotesPageState extends State<NotesPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text("Secure Notes"), centerTitle: true),
+      appBar: AppBar(title: Text("Safe Notes"), centerTitle: true),
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
