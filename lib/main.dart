@@ -34,6 +34,7 @@ class _NotesPageState extends State<NotesPage> {
   void initState() {
     super.initState();
     loadPin();
+    loadNotes();
   }
 
   @override
@@ -63,6 +64,7 @@ class _NotesPageState extends State<NotesPage> {
                   setState(() {
                     notes.add(noteController.text);
                   });
+                  saveNotes();
                   noteController.clear();
                 }
               },
@@ -83,6 +85,7 @@ class _NotesPageState extends State<NotesPage> {
                           setState(() {
                             notes.removeAt(index);
                           });
+                          saveNotes();
                         },
                       ),
                     ),
@@ -117,7 +120,7 @@ class _NotesPageState extends State<NotesPage> {
             ElevatedButton(
               onPressed: () {
                 if (savedPin == null) {
-                  if(pinController.text.isNotEmpty) {
+                  if (pinController.text.isNotEmpty) {
                     savePin(pinController.text);
                   }
                 } else if (pinController.text == savedPin) {
@@ -156,5 +159,17 @@ class _NotesPageState extends State<NotesPage> {
     });
 
     pinController.clear();
+  }
+
+  Future<void> saveNotes() async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setStringList('notes', notes);
+  }
+
+  Future<void> loadNotes() async {
+    final pref = await SharedPreferences.getInstance();
+    setState(() {
+      notes = pref.getStringList("notes") ?? [];
+    });
   }
 }
