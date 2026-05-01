@@ -51,10 +51,19 @@ class _HomeControllerState extends State<HomeController> {
         savedPin: savedPin,
         pinController: pinController,
         onSavePin: (pin) => savePin(pin),
-        onUnlock: () {
-          setState(() {
-            isUnlocked = true;
-          });
+        onUnlock: (inputPin) async {
+          bool isValid = await storage.verifyPin(inputPin);
+
+          if (isValid) {
+            setState(() {
+              isUnlocked = true;
+            });
+            pinController.clear();
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Wrong PIN")));
+          }
         },
       );
     }
@@ -90,8 +99,10 @@ class _HomeControllerState extends State<HomeController> {
   Future<void> savePin(String pin) async {
     await storage.savePin(pin);
 
+    final stored = await storage.loadPin();
+
     setState(() {
-      savedPin = pin;
+      savedPin = stored;
       isUnlocked = true;
     });
 

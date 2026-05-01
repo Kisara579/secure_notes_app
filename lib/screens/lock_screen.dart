@@ -4,7 +4,7 @@ class LockScreen extends StatelessWidget {
   final String? savedPin;
   final TextEditingController pinController;
   final Function(String) onSavePin;
-  final VoidCallback onUnlock;
+  final Future<void> Function(String) onUnlock;
 
   const LockScreen({
     super.key,
@@ -17,10 +17,7 @@ class LockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Safe Notes"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text("Safe Notes"), centerTitle: true),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -57,13 +54,8 @@ class LockScreen extends StatelessWidget {
                   if (pinController.text.isNotEmpty) {
                     onSavePin(pinController.text);
                   }
-                } else if (pinController.text == savedPin) {
-                  onUnlock();
-                  pinController.clear();
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Wrong PIN")),
-                  );
+                  onUnlock(pinController.text);
                 }
               },
               child: Text(savedPin == null ? "Set PIN" : "Unlock"),
