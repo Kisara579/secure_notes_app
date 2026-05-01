@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import 'services/storage_service.dart';
 import 'screens/lock_screen.dart';
 import 'screens/notes_page.dart';
