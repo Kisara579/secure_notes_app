@@ -49,9 +49,6 @@ This app demonstrates basic cybersecurity concepts such as user authentication a
 ---
 
 ## 📸 Screenshots
-
-(Add your app screenshots here)
-
 ---
 
 ## 📦 Installation
